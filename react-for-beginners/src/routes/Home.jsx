@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Movie from "./components/Movie";
+import Movie from "../components/Movie";
 
 function Home() {
   const TMDB_TOKEN = import.meta.env.VITE_TMDB_TOKEN;
