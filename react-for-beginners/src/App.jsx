@@ -1,29 +1,64 @@
 import { useState, useEffect } from "react";
+import Movie from "./Movie";
 
 function App() {
+  const TMDB_TOKEN = import.meta.env.VITE_TMDB_TOKEN;
+
+  const url = `https://api.themoviedb.org/3/movie/popular?language=ko-KR&page=1`;
+  const genreUrl =
+    "https://api.themoviedb.org/3/genre/movie/list?language=ko-KR";
+  const imageUrl = "https://image.tmdb.org/t/p/w200";
+
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${TMDB_TOKEN}`,
+    },
+  };
+
   const [loading, setLoading] = useState(true);
-  const [coins, setCoins] = useState([]);
+  const [movies, setMovies] = useState([]);
+  const [genre, setGenre] = useState([]);
+
+  const getMovies = async () => {
+    const movieJson = await (await fetch(url, options)).json();
+    setMovies(movieJson.results);
+  };
+  const getGenres = async () => {
+    const genresJson = await (await fetch(genreUrl, options)).json();
+    console.log(genresJson);
+    const map = {};
+    genresJson.genres.forEach((genreIndex) => {
+      map[genreIndex.id] = genreIndex.name;
+    });
+    setGenre(map);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    fetch("https://api.coinpaprika.com/v1/tickers")
-      .then((response) => response.json())
-      .then((json) => {
-        setCoins(json);
-        setLoading(false);
-      });
+    getMovies();
+    getGenres();
   }, []);
+
   return (
     <div>
-      <h1>The Coins! {loading ? "" : `(${coins.length})`}</h1>
       {loading ? (
-        <strong>Loading...</strong>
+        <h1>Loading...</h1>
       ) : (
-        <select>
-          {coins.map((coin) => (
-            <option key={coin.id}>
-              {coin.name} ({coin.symbol}): ${coin.quotes.USD.price} USD
-            </option>
+        <div>
+          {movies.map((movie) => (
+            <Movie
+              key={movie.id}
+              poster_path={imageUrl + movie.poster_path}
+              title={movie.title}
+              overview={movie.overview}
+              genre_ids={movie.genre_ids
+                .map((id) => <li key={id}>{genre[id]}</li>)
+                .filter(Boolean)}
+            />
           ))}
-        </select>
+        </div>
       )}
     </div>
   );
