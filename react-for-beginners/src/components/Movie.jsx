@@ -11,4 +11,11 @@ function Movie({ poster_path, title, overview, genre_ids }) {
   );
 }
 
+Movie.propTypes = {
+  poster_path: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  summary: PropTypes.string.isRequired,
+  genres: PropTypes.arrayOf(string).isRequired,
+};
+
 export default Movie;
