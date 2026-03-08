@@ -50,6 +50,7 @@ function Home() {
           {movies.map((movie) => (
             <Movie
               key={movie.id}
+              id={movie.id}
               poster_path={imageUrl + movie.poster_path}
               title={movie.title}
               overview={movie.overview}
